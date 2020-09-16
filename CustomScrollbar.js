@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useRef, useState, useEffect, useCallback } from
 import useEventListener from './assets/useEventListener';
 import useFakeAwait from './assets/useFakeAwait';
 import ConditionalWrapper from './assets/ConditionalWrapper';
+import './assets/scrollbar.scss';
 
 /**
  * We use a negative right on the content to hide original OS scrollbars
