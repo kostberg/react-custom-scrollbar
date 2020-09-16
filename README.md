@@ -7,9 +7,6 @@
 + height = "content" (content or any acceptable css value for height)
 + autohide = 0 (integer)
 
-## Installment
-Just download all files in this repository and put them in ur prefered folders. Just make sure the dependecies has the correct paths 😎
-
 ## Styling 💅
 Easiest way is just to edit the provided scss file manually or hook use classname provided in the component props with you own css file
 
@@ -23,3 +20,6 @@ const Component = (
   </CustomScrollbar>
 )
 ```
+
+## Installment
+Just download all the files in this repository and put them in ur prefered folders. Just make sure the dependecies has the correct paths 😎
