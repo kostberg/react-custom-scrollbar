@@ -1,9 +1,6 @@
 ![Mozilla Add-on](https://img.shields.io/amo/dw/webmail-ad-blocker?style=for-the-badge) ![Mozilla Add-on](https://img.shields.io/amo/stars/dustman?style=for-the-badge)
 # React custom scrollbar ⚡
 
-## Styling 💅
-Easiest way is just to edit the provided scss file manually or hook use classname provided in the component props with you own css file
-
 ## Props/Options
 + className = "scrollbar" (string)
 + disabled = false (boolean, use this to disable scroll on for example integrating menus with this)
@@ -13,7 +10,8 @@ Easiest way is just to edit the provided scss file manually or hook use classnam
 ## Installment
 Just download all files in this repository and put them in ur prefered folders. Just make sure the dependecies has the correct paths 😎
 
-
+## Styling 💅
+Easiest way is just to edit the provided scss file manually or hook use classname provided in the component props with you own css file
 
 ## Usage:
 ```javascript
