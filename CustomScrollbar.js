@@ -2,6 +2,9 @@ import React, { useLayoutEffect, useRef, useState, useEffect, useCallback } from
 import useEventListener from './assets/useEventListener';
 import useFakeAwait from './assets/useFakeAwait';
 import ConditionalWrapper from './assets/ConditionalWrapper';
+import useDebounceFunc from './assets/useDebounceFunc';
+
+// Styling
 import './assets/scrollbar.scss';
 
 /**
@@ -32,12 +35,14 @@ const defaultOpts = {
     className: "scrollbar", 
     disabled: false,
     height: "content",
-    shouldRender: true
+    shouldRender: true,
+    autohide: false
 }
 
 function CustomScrollbar({ children, ...options  }) {
-    const { className, disabled, height } = { ...defaultOpts, ...options };
+    const { className, disabled, height, autohide: authideMS } = { ...defaultOpts, ...options };
     const [scrollRatio, setScrollRatio] = useState(1);
+    const [autohide, setAutohide] = useState(false);
     const [isDraggingTrack, setIsDraggingTrack] = useState(false);
     const [disabledScrollbar, setDisabledScrollbar] = useState(disabled);
     useEffect(() => setDisabledScrollbar(disabled), [disabled]);
@@ -45,12 +50,14 @@ function CustomScrollbar({ children, ...options  }) {
         if(!ref) return false;
         if(ref.clientHeight) return ref;
         return false;
-    }, [])
+    }, []);
     const [scrollerNode, setScrollerNode] = useFakeAwait(compare, []);
     const [trackNode, setTrackNode] = useFakeAwait(compare, []);
 
     const trackAnimationRef = useRef();
-    const memoizedProps = useRef({});
+    const memoizedProps = useRef({
+        authideMS
+    });
 
     const moveTrack = useCallback(e => {
         let moveAnimation;
@@ -78,19 +85,24 @@ function CustomScrollbar({ children, ...options  }) {
         window.addEventListener('mouseup', stop, { once: true });
         }, [scrollerNode, scrollRatio],
     );
-    
+    const autohideFunc = useCallback(() => setAutohide(true), []);
+    const autohideTrigger = useDebounceFunc(autohideFunc, authideMS)
+
     const onScroll = useCallback(() => {
         const { clientHeight, scrollHeight, trackHeight } = memoizedProps.current;
         if (scrollRatio === 1 || !trackNode) return;
 
         cancelAnimationFrame(trackAnimationRef.current);
-
+        if(memoizedProps.current.authideMS){
+            setAutohide(false);
+            autohideTrigger();
+        }
         trackAnimationRef.current = requestAnimationFrame(() => {
             const ratio = (scrollerNode.scrollTop) / (scrollHeight - clientHeight);
             const y = ratio * (clientHeight - trackHeight);
             trackNode.style.transform = `translateY(${y}px)`;
         });
-    }, [scrollerNode, scrollRatio, trackNode]);
+    }, [scrollerNode, scrollRatio, trackNode, autohideTrigger]);
 
     const updateScrollbar = useCallback(() => {
         if(!scrollerNode || !trackNode) return;
@@ -100,6 +112,7 @@ function CustomScrollbar({ children, ...options  }) {
             const { clientHeight, scrollHeight } = scrollerNode;
             setScrollRatio(clientHeight / scrollHeight);
             memoizedProps.current = {
+                ...memoizedProps.current,
                 clientHeight,
                 scrollHeight: scrollHeight,
                 trackHeight: trackNode.clientHeight + 12 // Plus 12 to get margin on top and bottom
@@ -131,7 +144,7 @@ function CustomScrollbar({ children, ...options  }) {
         right: isDraggingTrack ? 1 : undefined,
         width: isDraggingTrack ? 10 : undefined,
         height: `${scrollRatio * 100}%`,
-        opacity: !disabledScrollbar || scrollRatio === 1 ? undefined : 0,
+        opacity: !autohide && (!disabledScrollbar || scrollRatio === 1) ? undefined : 0,
         display: disabledScrollbar ?  'none' : undefined
     }
 
